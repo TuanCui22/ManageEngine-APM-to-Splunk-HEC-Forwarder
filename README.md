@@ -1,7 +1,3 @@
-Here’s a **professional README.md** you can drop into your GitHub repo so it looks clean and complete:
-
----
-
 ````markdown
 # ManageEngine APM → Splunk HEC Forwarder
 
