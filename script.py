@@ -26,12 +26,12 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ---------------------------
 # Configuration
 # ---------------------------
-APM_SERVER = "http://192.168.33.41:9090"
-API_KEY = "ce65b0070758f90a59e770bb8d84161b"
+APM_SERVER = "http://<apm-server>:9090"
+API_KEY = "<your-apm-api-key>"
 
-SPLUNK_HEC_URL = "https://192.168.35.5:8088/services/collector"
-SPLUNK_HEC_TOKEN = "cef782f2-bfe7-4d32-9cea-20c3dfe6ee2e"
-SPLUNK_INDEX = "me-apm"
+SPLUNK_HEC_URL = "https://<splunk-server>:8088/services/collector"
+SPLUNK_HEC_TOKEN = "<your-splunk-hec-token>"
+SPLUNK_INDEX = "<splunk-index>"
 
 FILTERS = {
     "AVAILABILITYATTRIBUTEID": ["700"]
@@ -215,3 +215,4 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         logging.info("Stopped by user. Goodbye!")
+
