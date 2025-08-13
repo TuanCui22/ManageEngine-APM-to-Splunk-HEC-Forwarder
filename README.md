@@ -8,13 +8,13 @@ It runs in a loop at a user-defined interval and supports filtering monitors by 
 
 ## Features
 
-- ✅ Fetch monitor list from ManageEngine APM via REST API (XML)
-- ✅ Filter monitors based on attribute values (e.g., availability)
-- ✅ Retrieve detailed monitor and child monitor data
-- ✅ Send structured events to Splunk via HEC
-- ✅ Interval-based execution (e.g., every `30s` or `5m`)
-- ✅ Logging for better observability
-- ✅ Configurable via constants in the script or environment variables
+- Fetch monitor list from ManageEngine APM via REST API (XML)
+- Filter monitors based on attribute values (e.g., availability)
+- Retrieve detailed monitor and child monitor data
+- Send structured events to Splunk via HEC
+- Interval-based execution (e.g., every `30s` or `5m`)
+- Logging for better observability
+- Configurable via constants in the script or environment variables
 
 ---
 
