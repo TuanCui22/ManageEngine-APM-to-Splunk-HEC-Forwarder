@@ -139,5 +139,3 @@ This project is licensed under the [MIT License](LICENSE).
 ## Disclaimer
 
 This script is provided **as-is** without warranty. Use at your own risk and test in a non-production environment before deployment.
-
-```
