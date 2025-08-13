@@ -1,38 +1,78 @@
+#!/usr/bin/env python3
+"""
+ManageEngine APM to Splunk HEC Forwarder
+----------------------------------------
+This script:
+  1. Fetches a list of monitors from ManageEngine APM.
+  2. Filters them based on given criteria.
+  3. Retrieves monitor data for each.
+  4. Sends the results to Splunk via HTTP Event Collector (HEC).
+
+Author: Thanh Tuan
+License: MIT
+"""
+
 import requests
 import xml.etree.ElementTree as ET
 import json
 import urllib3
+import time
+import logging
+from typing import List, Dict, Any
 
-# Bỏ cảnh báo SSL (nếu dùng https không verify cert)
+# Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Cấu hình APM và Splunk HEC
-APM_SERVER = "http://192.168.35.17:9090"
-API_KEY = "715641f8cdb12cfed5e155953ad6d536"
+# ---------------------------
+# Configuration
+# ---------------------------
+APM_SERVER = "http://192.168.33.41:9090"
+API_KEY = "ce65b0070758f90a59e770bb8d84161b"
 
 SPLUNK_HEC_URL = "https://192.168.35.5:8088/services/collector"
 SPLUNK_HEC_TOKEN = "cef782f2-bfe7-4d32-9cea-20c3dfe6ee2e"
 SPLUNK_INDEX = "me-apm"
 
-def apm_api_list_monitors():
+FILTERS = {
+    "AVAILABILITYATTRIBUTEID": ["700"]
+}
+
+# ---------------------------
+# Logging setup
+# ---------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+
+# ---------------------------
+# Functions
+# ---------------------------
+def apm_api_list_monitors() -> str:
+    """Fetch the list of monitors from ManageEngine APM."""
     url = f"{APM_SERVER}/AppManager/xml/ListMonitor"
     params = {'apikey': API_KEY, 'type': 'all'}
-    resp = requests.get(url, params=params)
+    resp = requests.get(url, params=params, timeout=10)
     resp.raise_for_status()
     return resp.text
 
-def parse_list_monitor_xml(xml_text):
+
+def parse_list_monitor_xml(xml_text: str) -> List[Dict[str, str]]:
+    """Parse the XML and extract monitor attributes."""
     root = ET.fromstring(xml_text)
     monitors = []
     response_node = root.find("./result/response")
-    if response_node is None:
-        print("Cannot find <response> node in XML.")
+    if not response_node:
+        logging.warning("No <response> node found in ListMonitor XML.")
         return monitors
+
     for monitor in response_node.findall('Monitor'):
         monitors.append(monitor.attrib)
     return monitors
 
-def filter_monitors(monitors, filters):
+
+def filter_monitors(monitors: List[Dict[str, str]], filters: Dict[str, Any]) -> List[Dict[str, str]]:
+    """Filter monitors based on the given filters."""
     filtered = []
     for mon in monitors:
         match = True
@@ -41,14 +81,11 @@ def filter_monitors(monitors, filters):
             if val is None:
                 match = False
                 break
-            
-            # Check if filter value is list -> check if val in that list
             if isinstance(v, list):
                 if val not in v:
                     match = False
                     break
             else:
-                # Exact match
                 if str(val).strip().lower() != str(v).strip().lower():
                     match = False
                     break
@@ -56,33 +93,35 @@ def filter_monitors(monitors, filters):
             filtered.append(mon)
     return filtered
 
-def get_monitor_data(resourceid):
+
+def get_monitor_data(resourceid: str) -> str:
+    """Fetch monitor data for a specific resource ID."""
     url = f"{APM_SERVER}/AppManager/xml/GetMonitorData"
     params = {'apikey': API_KEY, 'resourceid': resourceid}
-    resp = requests.get(url, params=params)
+    resp = requests.get(url, params=params, timeout=10)
     resp.raise_for_status()
     return resp.text
 
-def parse_monitor_data(xml_text):
+
+def parse_monitor_data(xml_text: str) -> List[Dict[str, Any]]:
+    """Parse monitor data XML into structured logs."""
     root = ET.fromstring(xml_text)
     monitorinfo = root.find("./result/response/Monitorinfo")
-    if monitorinfo is None:
-        print("No Monitorinfo found")
+    if not monitorinfo:
+        logging.warning("No Monitorinfo found in GetMonitorData XML.")
         return []
-    
+
     logs = []
 
-    # Thuộc tính chính (Monitorinfo)
-    main_info = {k: v for k, v in monitorinfo.attrib.items()}
-
-    # Thuộc tính con của monitor chính, thêm đơn vị vào key nếu có và không phải là space
+    # Main monitor info
+    main_info = dict(monitorinfo.attrib)
     main_attributes = {}
+
     for attr in monitorinfo.findall("Attribute"):
         key = attr.attrib.get("DISPLAYNAME") or attr.attrib.get("AttributeID")
         unit = attr.attrib.get("Units")
         value = attr.attrib.get("Value")
-
-        if unit and unit.strip() != "":
+        if unit and unit.strip():
             key = f"{key} ({unit.strip()})"
         main_attributes[key] = value
 
@@ -91,19 +130,16 @@ def parse_monitor_data(xml_text):
     main_info['source'] = "main"
     logs.append(main_info)
 
-    # Các child monitors, thêm đơn vị vào key nếu có và không phải là space
+    # Child monitors
     for childmonitors in monitorinfo.findall("CHILDMONITORS"):
         for childmonitorinfo in childmonitors.findall("CHILDMONITORINFO"):
-            child_log = {}
-            child_log.update(childmonitorinfo.attrib)
-
+            child_log = dict(childmonitorinfo.attrib)
             child_attributes = {}
             for childattr in childmonitorinfo.findall("CHILDATTRIBUTES"):
                 key = childattr.attrib.get("DISPLAYNAME") or childattr.attrib.get("AttributeID")
                 unit = childattr.attrib.get("Units")
                 value = childattr.attrib.get("Value")
-
-                if unit and unit.strip() != "":
+                if unit and unit.strip():
                     key = f"{key} ({unit.strip()})"
                 child_attributes[key] = value
             child_log['Attributes'] = child_attributes
@@ -113,63 +149,69 @@ def parse_monitor_data(xml_text):
 
     return logs
 
-def send_event_to_splunk(data):
+
+def send_event_to_splunk(data: Dict[str, Any]) -> None:
+    """Send a single event to Splunk HEC."""
     headers = {
         "Authorization": f"Splunk {SPLUNK_HEC_TOKEN}",
         "Content-Type": "application/json"
     }
-
     payload = {
-    "index": SPLUNK_INDEX,
-    "event": data
-}
+        "index": SPLUNK_INDEX,
+        "event": data
+    }
+    try:
+        resp = requests.post(SPLUNK_HEC_URL, headers=headers, data=json.dumps(payload), verify=False, timeout=10)
+        if resp.status_code == 200:
+            logging.info("Sent event to Splunk successfully.")
+        else:
+            logging.error(f"Failed to send event. Status: {resp.status_code}, Response: {resp.text}")
+    except requests.RequestException as e:
+        logging.error(f"Error sending to Splunk: {e}")
 
-    resp = requests.post(SPLUNK_HEC_URL, headers=headers, data=json.dumps(payload), verify=False)
-    if resp.status_code == 200:
-        print(f"Successfully sent event to Splunk HEC!")
-    else:
-        print(f"Failed to send event. Status code: {resp.status_code}, Response: {resp.text}")
 
-    # In command curl tương ứng để test thủ công
-    curl_cmd = (
-        f"curl -k {SPLUNK_HEC_URL} "
-        f"-H 'Authorization: Splunk {SPLUNK_HEC_TOKEN}' "
-        f"-H 'Content-Type: application/json' "
-        f"-d '{json.dumps(payload)}'"
-    )
-    print("\nRun this command in terminal to test manually:")
-    print(curl_cmd)
-    print("----------------------------------------------------")
+def main() -> None:
+    """Main execution logic."""
+    logging.info("Fetching list of monitors...")
+    try:
+        xml_list = apm_api_list_monitors()
+    except requests.RequestException as e:
+        logging.error(f"Error fetching monitor list: {e}")
+        return
+
+    monitors = parse_list_monitor_xml(xml_list)
+    filtered_monitors = filter_monitors(monitors, FILTERS)
+    logging.info(f"Found {len(filtered_monitors)} monitors after filtering.")
+
+    for mon in filtered_monitors:
+        resourceid = mon.get("RESOURCEID") or mon.get("resourceid") or mon.get("ResourceID")
+        logging.info(f"Fetching monitor data for RESOURCEID: {resourceid}")
+        try:
+            xml_data = get_monitor_data(resourceid)
+            logs = parse_monitor_data(xml_data)
+            for log in logs:
+                send_event_to_splunk(log)
+        except requests.RequestException as e:
+            logging.error(f"Error fetching monitor data for {resourceid}: {e}")
+        logging.info("----------------------------------------------------")
+
 
 if __name__ == "__main__":
-    print("Fetching list of monitors...")
-    xml_list = apm_api_list_monitors()
-    monitors = parse_list_monitor_xml(xml_list)
-    
-    filters = {
-    "AVAILABILITYATTRIBUTEID": ["3100", "40902"]
-}
-    
-    filtered_monitors = filter_monitors(monitors, filters)
+    try:
+        interval_input = input("Enter the interval (e.g., 30s or 5m): ").strip().lower()
+        if interval_input.endswith('s'):
+            interval = int(interval_input[:-1])
+        elif interval_input.endswith('m'):
+            interval = int(interval_input[:-1]) * 60
+        else:
+            interval = int(interval_input)  # default to seconds
 
-    print(f"After filtering, found {len(filtered_monitors)} monitors:\n")
-    for mon in filtered_monitors:
-        resourceid = mon.get("RESOURCEID") or mon.get("resourceid") or mon.get("ResourceID")
-        displayname = mon.get("DISPLAYNAME") or mon.get("displayname")
-        hostip = mon.get("HOSTIP") or mon.get("hostip")
-        availabilityattributeid = mon.get("AVAILABILITYATTRIBUTEID") or mon.get("availabilityattributeid")
-        print(f"RESOURCEID: {resourceid}, DISPLAYNAME: {displayname}, HOSTIP: {hostip}, AVAILABILITYATTRIBUTEID: {availabilityattributeid}")
-    
-    
-    print("\nFetching monitor data for filtered monitors...\n")
-    for mon in filtered_monitors:
-        resourceid = mon.get("RESOURCEID") or mon.get("resourceid") or mon.get("ResourceID")
-        print(f"Monitor Data for RESOURCEID: {resourceid}")
-        xml_data = get_monitor_data(resourceid)
-        logs = parse_monitor_data(xml_data)
-        for log in logs:
-            # Gửi từng log lên Splunk
-            send_event_to_splunk(log)
-        print("----------------------------------------------------")
+        logging.info(f"Running every {interval} seconds. Press Ctrl+C to stop.")
 
-    print("Done.")
+        while True:
+            main()
+            logging.info(f"Sleeping for {interval} seconds...\n")
+            time.sleep(interval)
+
+    except KeyboardInterrupt:
+        logging.info("Stopped by user. Goodbye!")
