@@ -1,82 +1,77 @@
-# ManageEngine APM → Splunk HEC Forwarder
+ManageEngine APM → Splunk HEC Forwarder
+A Python script that retrieves monitor data from ManageEngine Application Manager (APM) and forwards it to Splunk HTTP Event Collector (HEC).  
+The script is designed to run as a Splunk custom script in the data input section, automatically executing at a user-defined interval configured in Splunk.
+Workflow
 
-A Python script that pulls monitor data from **ManageEngine Application Manager (APM)** and sends it to **Splunk HTTP Event Collector (HEC)**.  
+Features
 
-It can run continuously at a set interval, with optional filtering to only send data from monitors that match specific attributes.
+Fetches monitor list from ManageEngine APM via REST API (XML)
+Filters monitors based on attribute values (e.g., availability)
+Retrieves detailed data for monitors and their child monitors
+Sends structured events to Splunk via HEC
+Executes automatically based on Splunk data input interval
+Includes logging for visibility and troubleshooting
+Supports configuration via script constants or environment variables
 
-## Workflow
+Requirements
 
-![Workflow Diagram](WF.png)
+Python 3.7+
+Splunk instance with HTTP Event Collector (HEC) enabled and a valid token
+ManageEngine APM server with API access enabled
+Splunk instance configured to support custom script data inputs
 
-## Features
+Installation
 
-- Fetch monitor list from ManageEngine APM via REST API (XML)
-- Filter monitors by attribute values (e.g., availability)
-- Retrieve detailed data for monitors and their child monitors
-- Send structured events to Splunk via HEC
-- Run at a fixed interval (e.g., `30s`, `1m`, `5m`)
-- Logging for visibility and troubleshooting
-- Configuration via script constants or environment variables
+Clone the repository
+git clone https://github.com/TuanCui22/ManageEngine-APM-to-Splunk-HEC-Forwarder.git
+cd ManageEngine-APM-to-Splunk-HEC-Forwarder
 
-## Requirements
 
-- Python **3.7+**
-- Splunk HEC enabled with a valid token
-- ManageEngine APM server with API access enabled
+Install dependencies
+pip install -r requirements.txt
 
-## Installation
 
-1. **Clone the repository**
-    ```bash
-    git clone https://github.com/TuanCui22/ManageEngine-APM-to-Splunk-HEC-Forwarder.git
-    cd ManageEngine-APM-to-Splunk-HEC-Forwarder
-    ```
+Configure settings Update the script with your configuration details, either directly in the script or via environment variables:
+APM_SERVER = "http://<apm-server>:9090"
+API_KEY = "<your-apm-api-key>"
+SPLUNK_HEC_URL = "https://<splunk-server>:8088/services/collector"
+SPLUNK_HEC_TOKEN = "<your-splunk-hec-token>"
+SPLUNK_INDEX = "<splunk-index>"
 
-2. **Install dependencies**
-    ```bash
-    pip install -r requirements.txt
-    ```
 
-3. **Configure settings**
-    ```python
-    APM_SERVER = "http://<apm-server>:9090"
-    API_KEY = "<your-apm-api-key>"
-    SPLUNK_HEC_URL = "https://<splunk-server>:8088/services/collector"
-    SPLUNK_HEC_TOKEN = "<your-splunk-hec-token>"
-    SPLUNK_INDEX = "<splunk-index>"
-    ```
+Set up Splunk custom script
 
-## Usage
+Copy the script (apm_to_splunk.py) to the Splunk bin directory (e.g., $SPLUNK_HOME/bin/scripts/).
+Configure a new scripted input in Splunk:
+Navigate to Settings > Data Inputs > Scripts in the Splunk UI.
+Select the script path and set the execution interval (e.g., 60 for every 60 seconds).
+Specify the target index (e.g., me-apm) and any additional settings.
 
-### Run with script prompts
-```bash
-python apm_to_splunk.py
-```
 
-### Run with environment variables (optional)
-```bash
+Ensure the Splunk user has execution permissions for the script.
+
+
+
+Usage
+Running as a Splunk scripted input
+Once configured in Splunk, the script runs automatically based on the interval defined in the Splunk data input settings. No manual execution is required.
+Environment variables (optional)
+You can use environment variables to override script constants:
 export APM_SERVER="http://apm-server:9090"
 export API_KEY="your-apm-api-key"
 export SPLUNK_HEC_URL="https://splunk-server:8088/services/collector"
 export SPLUNK_HEC_TOKEN="your-token"
 export SPLUNK_INDEX="me-apm"
-python apm_to_splunk.py
-```
 
-### Example run
-```
-Enter the interval to run the script repeatedly (e.g., 30s or 5m): 1m
+Example log output
+Logs are written to Splunk or the script's configured log file for troubleshooting:
 [INFO] Fetching list of monitors...
 [INFO] After filtering, found 3 monitors:
 [INFO] RESOURCEID: 101, DISPLAYNAME: WebServer-1, HOSTIP: 192.168.1.10
 [INFO] Fetching monitor data for RESOURCEID: 101
 [INFO] Successfully sent event to Splunk HEC!
-----------------------------------------------------
-[INFO] Sleeping for 60 seconds...
-```
 
-### Example Splunk event
-```json
+Example Splunk event
 {
   "AVAILABILITYSEVERITY": "-",
   "Attributes": {
@@ -93,15 +88,16 @@ Enter the interval to run the script repeatedly (e.g., 30s or 5m): 1m
   "host": "192.168.33.46",
   "source": "CPU Core-CPU_0"
 }
-```
 
-## Disclaimer
-This script is provided as is, without warranty.  
-Always test in a non-production environment before deploying to production.
+Notes
 
-## License
+Verify connectivity to the Splunk HEC endpoint and ManageEngine APM server.
+Test the script in a non-production environment before enabling it in Splunk.
+Monitor Splunk logs for errors related to script execution.
+
+Disclaimer
+This script is provided as is, without warranty.Always test in a non-production environment before deploying to production.
+License
 MIT License
-
-## Author
-Thanh Tuan  
-GitHub: https://github.com/TuanCui22
+Author
+Thanh TuanGitHub: https://github.com/TuanCui22
