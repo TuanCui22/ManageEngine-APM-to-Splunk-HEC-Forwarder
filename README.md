@@ -2,7 +2,7 @@
 
 A Python script that retrieves monitor data from **ManageEngine Application Manager (APM)** and forwards it to **Splunk HTTP Event Collector (HEC)**.  
 
-The script is designed to run as a **Splunk custom script** in the data input section, automatically executing at a user-defined interval configured in Splunk.
+The script is designed to run as a **Splunk custom script** in the **Data Input** section, automatically executing at a user-defined interval configured in Splunk.
 
 ## Workflow
 
