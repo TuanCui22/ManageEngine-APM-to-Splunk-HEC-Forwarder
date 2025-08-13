@@ -141,9 +141,3 @@ This project is licensed under the [MIT License](LICENSE).
 This script is provided **as-is** without warranty. Use at your own risk and test in a non-production environment before deployment.
 
 ```
-
----
-
-If you want, I can also give you a matching **`.gitignore`** and **`requirements.txt`** so your GitHub repo is instantly clean and ready for cloning.  
-Do you want me to prepare those too?
-```
