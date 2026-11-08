@@ -1,9 +1,8 @@
 """Configuration for the APM → Splunk HEC forwarder.
 
-The original script hard-coded an APM API key, a Splunk HEC token and a LAN
-address at module scope. That is the first thing to fix: a credential in a file
-that gets committed is a credential that has to be rotated, and an address in a
-file cannot be changed without editing code.
+A credential in a file that gets committed is a credential that has to be
+rotated, and an address in a file cannot be changed without editing code. So
+neither lives in the source: everything resolves at runtime.
 
 Resolution order, highest first:
   1. command-line flags

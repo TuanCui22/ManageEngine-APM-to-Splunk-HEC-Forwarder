@@ -4,13 +4,12 @@ The APM XML API is the only source of truth here, so the client's job is narrow:
 make a request, surface a useful error, and hand back parsed data. It does not
 decide what to forward.
 
-Two things the original got wrong that this fixes:
+Two constraints shape it:
 
-* ``verify=False`` on every call. A management network is not a trusted network;
-  a self-signed certificate is handled with ``ca_bundle``, not by disabling
-  verification for every request.
-* No timeout. A hung APM server blocked the Splunk scripted input forever, and
-  Splunk's own scheduler then piled up runs behind it.
+* A management network is not a trusted network. A self-signed certificate is
+  handled with ``ca_bundle``, never by disabling verification.
+* Every request has a timeout. A hung APM server would otherwise block the
+  Splunk scripted input, and Splunk's scheduler would pile runs up behind it.
 """
 
 from __future__ import annotations
