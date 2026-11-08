@@ -1,0 +1,60 @@
+# apm2splunk — example configuration
+#
+# Copy to config.local.toml and edit. Do NOT commit the copy: it holds a token.
+# Every value here can also come from an environment variable or a flag, and
+# flags win over environment, which wins over this file.
+#
+#   export APM2SPLUNK_HEC_TOKEN=...        # preferred for the token
+#   apm2splunk forward --config config.local.toml
+#
+# Environment variable names are APM2SPLUNK_ plus the key in upper case:
+#   apm_server   -> APM2SPLUNK_APM_SERVER
+#   apm_api_key  -> APM2SPLUNK_APM_API_KEY
+#   hec_url      -> APM2SPLUNK_HEC_URL
+#   hec_token    -> APM2SPLUNK_HEC_TOKEN
+#   index        -> APM2SPLUNK_INDEX
+
+# ManageEngine APM base URL. No trailing slash needed; one is stripped.
+apm_server = "https://apm.example.internal:9090"
+
+# APM API key. Prefer the environment variable over this line.
+apm_api_key = ""
+
+# Splunk HEC endpoint. The full collector path, not just the host.
+hec_url = "https://splunk.example.internal:8088/services/collector"
+
+# HEC token. Prefer the environment variable over this line.
+hec_token = ""
+
+# Target index. It must already exist in Splunk and be allowed by the token.
+index = "me_apm"
+
+# Sourcetype applied to every event. Keep it stable: saved searches key off it.
+sourcetype = "manageengine:apm"
+
+# TLS verification. Leave this true. For a self-signed certificate use ca_bundle
+# instead of turning verification off - a machine in the path can read both the
+# APM key and the HEC token otherwise.
+verify_tls = true
+ca_bundle = ""
+
+# Per-request timeout in seconds, and how many times to retry a transient
+# failure (5xx, 429, connection error). 4xx is never retried.
+timeout = 30.0
+max_retries = 3
+
+# Events per HEC request. HEC accepts an array; 100 is a good default. Lower it
+# if events are large enough to hit the HEC payload limit.
+batch_size = 100
+
+# Remembers what was already sent, so a restart does not duplicate a window.
+# Point this somewhere writable and persistent. Leave empty to disable.
+state_file = "apm2splunk-state.json"
+
+# DEBUG, INFO, WARNING, ERROR.
+log_level = "INFO"
+
+# Only forward monitors in these groups. Empty list means every monitor.
+# Names must match the group DISPLAYNAME in APM exactly.
+group_names = []
+# group_names = ["Linux Group", "Windows Group"]

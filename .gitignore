@@ -1,0 +1,23 @@
+# Secrets and local state
+.env
+*.local
+apm2splunk-state.json
+apm2splunk-status.html
+config.local.json
+config.local.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Editors
+.vscode/
+.idea/
+*.swp

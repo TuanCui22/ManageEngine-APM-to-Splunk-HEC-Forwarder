@@ -1,0 +1,100 @@
+PRIVATE RESEARCH ARTEFACT LICENSE v1.0
+SPDX-License-Identifier: LicenseRef-Private-Research-1.0
+
+Copyright (c) 2026 TuanCui22. All rights reserved.
+
+This license governs the software and accompanying documentation in this
+repository (the "Artefact"). It is not an open-source license and has not been
+approved by the Open Source Initiative. It grants private research access, not
+distribution rights.
+
+1. GRANT
+
+   Permission is granted, free of charge, to the copyright holder and to any
+   person the copyright holder has explicitly authorised in writing, to use,
+   copy, modify and run the Artefact solely for private, non-commercial
+   research, security assessment, evaluation and educational purposes, subject
+   to the conditions below.
+
+2. CONDITIONS
+
+   You may not:
+
+   (a) redistribute, publish, sublicense, sell, lease or otherwise make the
+       Artefact or any derivative work available to any third party;
+
+   (b) use the Artefact, or any derivative work, in a commercial product, a
+       paid service, or any engagement billed to a client;
+
+   (c) offer the Artefact, or any derivative work, as a hosted or network
+       service, or otherwise make its functionality available to third parties
+       over a network;
+
+   (d) remove, obscure or alter this notice, the NOTICE file, the
+       SPDX-License-Identifier line in any source file, or any authorship
+       attribution;
+
+   (e) represent the Artefact as certified, approved or endorsed by any person
+       or organization, including its copyright holder.
+
+3. AUTHORIZED-USE COVENANT
+
+   The Artefact reads monitoring data and forwards it to a log platform. You may
+   run it only against systems you own or operate, or for which you hold prior
+   written authorization from the system owner.
+
+   You are solely responsible for compliance with all applicable law in your
+   jurisdiction, including data-protection, privacy and export-control law, and
+   for the handling of any credentials or personal data the Artefact processes.
+
+   Nothing in this license grants any right to access any system.
+
+4. THIRD-PARTY COMPONENTS
+
+   Third-party components remain under their own terms as recorded in NOTICE and
+   LICENSES.md. This license does not alter those terms and grants no rights to
+   those components.
+
+5. NO WARRANTY
+
+   THE ARTEFACT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NONINFRINGEMENT.
+
+   No output of the Artefact constitutes a professional monitoring, security or
+   audit opinion.
+
+6. LIMITATION OF LIABILITY
+
+   IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE ARTEFACT OR THE USE
+   OR OTHER DEALINGS IN THE ARTEFACT.
+
+   This includes, without limitation, damages arising from missed or duplicated
+   monitoring data, from licence or ingestion costs incurred in Splunk, and from
+   any legal or regulatory consequence of the user's own activity.
+
+7. NO CONTRIBUTION LICENSE
+
+   Contributions intentionally submitted for inclusion in the Artefact shall be
+   under the terms of this license, without any additional terms or conditions,
+   unless explicitly stated otherwise in writing.
+
+8. TERMINATION
+
+   Any breach of Sections 2 or 3 terminates this license immediately and
+   automatically. On termination you must cease all use and destroy all copies
+   of the Artefact in your possession or control.
+
+9. SEVERABILITY
+
+   If any provision of this license is held unenforceable, that provision shall
+   be limited to the minimum extent necessary and the remaining provisions shall
+   remain in full force and effect.
+
+10. ENTIRE AGREEMENT
+
+    This license, together with NOTICE and LICENSES.md, is the entire agreement
+    concerning the Artefact. It may be superseded only by a written license
+    granted by the copyright holder.

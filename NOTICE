@@ -1,0 +1,37 @@
+apm2splunk — ManageEngine APM to Splunk HEC forwarder
+Copyright (c) 2026 TuanCui22. All rights reserved.
+
+This is a PRIVATE RESEARCH ARTEFACT, not open-source software.
+
+Licensed under the Private Research Artefact License v1.0.
+See the LICENSE file for the full terms.
+
+SPDX-License-Identifier: LicenseRef-Private-Research-1.0
+
+In short:
+
+  - Private, non-commercial research and internal operational use only.
+  - No redistribution, no commercial use, no hosted or network service.
+  - Run it only against systems you own or operate.
+  - Provided "as is", with no warranty and no liability.
+
+If you received this software and did not receive it from the copyright holder,
+your copy is not licensed.
+
+--------------------------------------------------------------------------------
+THIRD-PARTY COMPONENTS
+
+apm2splunk's own source imports the Python standard library plus one runtime
+dependency. Nothing is vendored.
+
+  requests  - Apache-2.0 - https://requests.readthedocs.io/
+              The only declared runtime dependency.
+  urllib3   - MIT - pulled in by requests.
+
+Development only (not shipped, not imported at runtime):
+
+  pytest    - MIT
+  ruff      - MIT
+  pyflakes  - MIT
+
+No third-party source code is vendored in this repository.

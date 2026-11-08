@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apm2splunk"
+version = "2.0.0"
+description = "Forward ManageEngine APM monitor data to Splunk HTTP Event Collector"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "LicenseRef-Private-Research-1.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "TuanCui22" }]
+keywords = ["splunk", "hec", "manageengine", "apm", "monitoring", "observability"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: System :: Monitoring",
+]
+dependencies = [
+  "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6", "pyflakes>=3.2"]
+
+[project.scripts]
+apm2splunk = "apm2splunk.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["apm2splunk*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B"]
