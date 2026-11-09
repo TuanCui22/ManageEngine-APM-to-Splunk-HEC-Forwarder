@@ -1,4 +1,8 @@
-# ManageEngine APM → Splunk HEC Forwarder
+![HEADRACE](docs/banner.svg)
+
+# HEADRACE
+
+**ManageEngine APM into Splunk HEC, without losing a window.**
 
 Streams monitor and child-monitor metrics from **ManageEngine Application Manager
 (APM)** into **Splunk HTTP Event Collector (HEC)**, so APM telemetry sits in the

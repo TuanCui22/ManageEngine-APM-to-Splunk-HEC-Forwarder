@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "apm2splunk"
+name = "headrace"
 version = "2.0.0"
 description = "Forward ManageEngine APM monitor data to Splunk HTTP Event Collector"
 readme = "README.md"
@@ -25,7 +25,8 @@ dependencies = [
 dev = ["pytest>=8.0", "ruff>=0.6", "pyflakes>=3.2"]
 
 [project.scripts]
-apm2splunk = "apm2splunk.cli:main"
+headrace = "apm2splunk.cli:main"
+apm2splunk = "apm2splunk.cli:main"  # kept so existing installs keep working
 
 [tool.setuptools.packages.find]
 include = ["apm2splunk*"]

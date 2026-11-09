@@ -1,4 +1,8 @@
-# ManageEngine APM → Splunk HEC Forwarder
+![HEADRACE](docs/banner.svg)
+
+# HEADRACE
+
+**Đưa ManageEngine APM vào Splunk HEC, không rơi mất cửa sổ nào.**
 
 Đẩy dữ liệu monitor và child-monitor từ **ManageEngine Application Manager (APM)**
 sang **Splunk HTTP Event Collector (HEC)**, để telemetry của APM nằm cùng index

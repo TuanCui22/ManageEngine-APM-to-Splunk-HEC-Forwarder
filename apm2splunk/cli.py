@@ -74,10 +74,12 @@ def _add_behaviour_flags(parser: argparse.ArgumentParser) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="apm2splunk",
+        prog="headrace",
         description="Forward ManageEngine APM monitor data to Splunk HEC.",
         epilog="Configuration precedence: flags > environment > config file > defaults. "
-               "Environment variables are prefixed APM2SPLUNK_.",
+               "Environment variables are prefixed APM2SPLUNK_. "
+               "headrace is the current name; apm2splunk still works and "
+               "runs the same command.",
     )
     parser.add_argument("--version", action="version",
                         version="apm2splunk %s" % __version__)

@@ -83,7 +83,7 @@ PAGE = """<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>apm2splunk — status</title>
+<title>HEADRACE — status</title>
 <style>
 :root{--bg:#0f1419;--panel:#161d26;--line:#243040;--ink:#e6edf3;--muted:#9aa8b6;
   --faint:#6b7a89;--red:#e5534b;--amber:#d29922;--teal:#2f9e8f;--blue:#3b82f6}
@@ -133,7 +133,7 @@ footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);
 </style></head><body><div class="wrap">
 <header>
   <div>
-    <h1>apm2splunk</h1>
+    <h1>HEADRACE</h1>
     <div class="sub">ManageEngine APM &rarr; Splunk HEC forwarder</div>
   </div>
   <div class="sub" id="stamp"></div>
