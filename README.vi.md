@@ -13,6 +13,26 @@ dependency runtime.
 
 ---
 
+
+## Trông thế nào khi chạy
+
+```
+$ headrace check
+configuration error: missing required setting(s): apm_server, apm_api_key,
+hec_url, hec_token, index. Set them with --apm-server, --apm-api-key,
+--hec-url, --hec-token, --index, the APM2SPLUNK_* environment variables, or a
+config file.
+$ echo $?
+2
+```
+
+Đây cố ý là nhánh lỗi. `check` từ chối khởi động thay vì phát hiện thiếu token
+giữa chừng một batch, và exit code `2` tách "bạn chưa cấu hình" khỏi `1` là "gửi
+thất bại". Scripted input phân biệt được hai trường hợp mà không cần parse text.
+
+Khi đã cấu hình, `forward` đọc APM, lấy dấu vân tay từng cửa sổ monitor rồi gửi
+HEC theo batch; `status` ghi một trang HTML tự chứa từ state file.
+
 ## Năng lực
 
 | | |
@@ -32,7 +52,7 @@ dependency runtime.
 ## Cài đặt
 
 ```bash
-git clone https://github.com/TuanCui22/ManageEngine-APM-to-Splunk-HEC-Forwarder.git
+git clone https://github.com/TuanCui22/headrace.git
 cd ManageEngine-APM-to-Splunk-HEC-Forwarder
 python -m pip install -e .
 ```
@@ -69,7 +89,7 @@ trị nào sẽ được báo ngay lúc khởi động kèm đúng tên cờ và
 ## Kiểm tra trước khi triển khai
 
 ```bash
-apm2splunk check --config config.local.toml
+headrace --config config.local.toml check
 ```
 
 In ra cấu hình thực tế với secret đã che, liệt kê các monitor APM báo, và gửi một
@@ -79,13 +99,13 @@ monitor nào.
 Sau đó xem trước một lượt chạy mà không gửi:
 
 ```bash
-apm2splunk forward --config config.local.toml --dry-run
+headrace --config config.local.toml forward --dry-run
 ```
 
 ## Chạy
 
 ```bash
-apm2splunk forward --config config.local.toml
+headrace --config config.local.toml forward
 ```
 
 | Exit code | Nghĩa |
@@ -102,7 +122,7 @@ CLI, nên scripted input có thể trỏ vào một trong hai tên đó.
 
 ```bash
 # $SPLUNK_HOME/etc/apps/<app>/bin/
-cp -r apm2splunk /path/to/splunk/etc/apps/<app>/bin/
+cp -r headrace /path/to/splunk/etc/apps/<app>/bin/
 cp apm_to_splunk.py /path/to/splunk/etc/apps/<app>/bin/
 ```
 
@@ -113,7 +133,7 @@ ví dụ `$SPLUNK_HOME/var/run/apm2splunk-state.json`.
 ### Chỉ lấy một số nhóm
 
 ```bash
-apm2splunk forward --group "Linux Group" --group "Windows Group"
+headrace forward --group "Linux Group" --group "Windows Group"
 ```
 
 Không truyền `--group` nghĩa là lấy tất cả.
@@ -121,8 +141,8 @@ Không truyền `--group` nghĩa là lấy tất cả.
 ## Trang trạng thái
 
 ```bash
-apm2splunk forward --json > report.json
-apm2splunk status --report report.json --out status.html
+headrace forward --json > report.json
+headrace status --report report.json --out status.html
 ```
 
 Một file HTML tự chứa: CSS nhúng, không request ra ngoài, không mở port. Mở trực

@@ -13,6 +13,27 @@ runtime dependency.
 
 ---
 
+
+## What it looks like
+
+```
+$ headrace check
+configuration error: missing required setting(s): apm_server, apm_api_key,
+hec_url, hec_token, index. Set them with --apm-server, --apm-api-key,
+--hec-url, --hec-token, --index, the APM2SPLUNK_* environment variables, or a
+config file.
+$ echo $?
+2
+```
+
+That is the failure path on purpose. `check` refuses to start rather than
+discovering a missing token halfway through a batch, and exit code `2` separates
+"you have not configured this" from `1`, "the send failed". A scripted input can
+tell the difference without parsing text.
+
+Once configured, `forward` reads APM, fingerprints each monitor window, and sends
+batched HEC arrays; `status` writes a self-contained HTML page from the state file.
+
 ## Capabilities
 
 | | |
@@ -32,7 +53,7 @@ runtime dependency.
 ## Install
 
 ```bash
-git clone https://github.com/TuanCui22/ManageEngine-APM-to-Splunk-HEC-Forwarder.git
+git clone https://github.com/TuanCui22/headrace.git
 cd ManageEngine-APM-to-Splunk-HEC-Forwarder
 python -m pip install -e .
 ```
@@ -69,7 +90,7 @@ value is reported at startup with the exact flag and variable name to set.
 ## Verify before deploying
 
 ```bash
-apm2splunk check --config config.local.toml
+headrace --config config.local.toml check
 ```
 
 Prints the effective configuration with secrets redacted, lists the monitors APM
@@ -79,13 +100,13 @@ It does not read any monitor data.
 Then preview a run without sending:
 
 ```bash
-apm2splunk forward --config config.local.toml --dry-run
+headrace --config config.local.toml forward --dry-run
 ```
 
 ## Run
 
 ```bash
-apm2splunk forward --config config.local.toml
+headrace --config config.local.toml forward
 ```
 
 | Exit code | Meaning |
@@ -102,7 +123,7 @@ same CLI, so a scripted input can point at either name.
 
 ```bash
 # $SPLUNK_HOME/etc/apps/<app>/bin/
-cp -r apm2splunk /path/to/splunk/etc/apps/<app>/bin/
+cp -r headrace /path/to/splunk/etc/apps/<app>/bin/
 cp apm_to_splunk.py /path/to/splunk/etc/apps/<app>/bin/
 ```
 
@@ -114,7 +135,7 @@ a writable, persistent path such as
 ### Filtering to specific groups
 
 ```bash
-apm2splunk forward --group "Linux Group" --group "Windows Group"
+headrace forward --group "Linux Group" --group "Windows Group"
 ```
 
 No `--group` means every monitor.
@@ -122,8 +143,8 @@ No `--group` means every monitor.
 ## Status page
 
 ```bash
-apm2splunk forward --json > report.json
-apm2splunk status --report report.json --out status.html
+headrace forward --json > report.json
+headrace status --report report.json --out status.html
 ```
 
 A single self-contained HTML file: inline CSS, no external requests, no listening
